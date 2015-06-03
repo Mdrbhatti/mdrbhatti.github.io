@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="http://getbootstrap.com/assets/ico/favicon.ico">
+
+    <title>DFA Simulator</title>
+
+    <link href="bootstrap.css" rel="stylesheet">
+    <link href="bootstrap-theme.css" rel="stylesheet">
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link href="docs.min.css" rel="stylesheet">
+    <link href="theme.css" rel="stylesheet">
+    <script src="jscript.js"></script>
+    <script type="text/javascript" src="vis.js"></script>
+    <link href="vis.css" rel="stylesheet" type="text/css" />
+ 
+  <style type="text/css" id="holderjs-style"></style></head>
+
+  <body role="document">
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header navbar-custom">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Automata Project</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container theme-showcase" role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+
+      <div class="jumbotron">
+        <center><h2 id="ddd">DFA Simulator</h2></center>
+        <div class="bs-callout bs-callout-info">
+        <div id ="mynetwork" style="visibility:hidden;">
+        <div id ="divDfa" style="visibility:visible;">
+        <form id = "dfaform" action="">
+          <label class="checkbox-inline" id = "startingStateLabel">
+          <!-- !-->
+            <input type="checkbox" id="startingState" name="startingState" value="1" > <strong>Starting State</strong>
+          </label>
+          </br>
+          <label class="checkbox-inline">
+          <!-- !-->
+            <input type="checkbox" id="finalState" name="finalState" value="1"> <strong>Final State</strong>
+          </label>
+          </br>
+          </br>
+          <div class="form-group">
+            <label for="exampleInputEmail3">State</label>
+            <!-- !-->
+            <input type="text" class="form-control" id="stateName" name="stateName" placeholder="State Name" required>
+            <label for="exampleInputEmail3">Transitions</label>
+            <!-- !-->
+            <input type="text" class="form-control" id="transitions" name="transitions" placeholder="(Symbol, Next-State) separated by commas -> (1,b), (2,d), (3,e)">
+          </div>
+          </br>
+          <!-- !-->
+         <button type="button" class="btn btn-primary" onclick="dfaCreator(this.form)">Add</button>
+        </form>
+        </label>
+        </div>
+        </div>
+        <center><button type="button" class="btn btn-primary" onclick="createLinkedList()" style="visibility:visible" id = "dfa_create_button">Create DFA</button></center>
+        </br>
+        </br>
+        <button type="button" class="btn btn-primary" onclick="containsEpsilon()">Contains Epsilon?</button>
+        <p id = "isContainingEpsilon"> </p>
+        </br>
+        </br>
+        <button type="button" class="btn btn-primary" onclick="isLanguageEmpty()">Is Language Empty?</button>
+        <p id = "isLanguageEmpty"> </p>
+        </br>
+        </br>
+        <button type="button" class="btn btn-primary" onclick="generateAllPossibleWords()">Generate All Possible Words</button>
+        <p id = "wordList"> </p>
+        </br>
+        </br>
+
+        <form id = "stringForm" action="">
+          <div class="form-group">
+            <label for="exampleInputEmail3">Input String</label>
+            <!-- !-->
+          <input type="text" class="form-control" id="inputString" name="inputString" placeholder="Enter String" required>
+          </div>
+          <p id = "stringValidationText">  </p>
+          <button type="button" class="btn btn-primary" onclick="verifyString(this.form)">Check</button>
+        </form>
+        <!-- <center><button type="button" class="btn btn-primary">Show Transition Table</button></center> -->
+      </div> <!-- /container -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="jquery.js"></script>
+    <script src="bootstrap.js"></script>
+    <script src="docs.js"></script>
+    <script src="jscript.js"></script>
+
+
+</body></html>

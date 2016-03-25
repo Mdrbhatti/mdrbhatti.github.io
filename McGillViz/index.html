@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.dot circle {
+  fill: lightsteelblue;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.dot circle.dragging {
+  fill: red;
+  stroke: brown;
+}
+
+.axis line {
+  fill: none;
+  stroke: #ddd;
+  shape-rendering: crispEdges;
+  vector-effect: non-scaling-stroke;
+}
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+</style>
+<body>
+<script src="d3.min.js"></script>
+<script src="d3tip.js"></script>
+
+<script>
+var y_axis_label = "Period Derivative";
+var x_axis_label = "Period";
+var label_by = "RMS";
+var margin = {top: 150, right: 200, bottom: 150, left: 200},
+    width = window.innerWidth - margin.left - margin.right,
+    height = window.innerHeight - margin.top - margin.bottom;
+
+
+var x = d3.scale.linear()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var color = d3.scale.category10();
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+var exp_formatter = d3.format("e");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+var zoom = d3.behavior.zoom()
+    .scaleExtent([1, 10])
+    .on("zoom", zoomed);
+
+var drag = d3.behavior.drag()
+    .origin(function(d) { return d; })
+    .on("dragstart", dragstarted)
+    .on("drag", dragged)
+    .on("dragend", dragended);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.right + ")")
+    .call(zoom);
+
+var rect = svg.append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .style("fill", "none")
+    .style("pointer-events", "all");
+
+var container = svg.append("g");
+
+d3.json("https://gist.githubusercontent.com/anonymous/c091a545bb9a349cae8c/raw/aaffa73722f01733540af0721c95a452f4cd6009/pulsar_data_test.json", function(error, data) {
+  if (error) throw error;
+  var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { 
+  var tip_str = "";
+  tip_str += "<strong>" + y_axis_label + ":</strong> <span style='color:red'>" + d[y_axis_label] + "</span>";
+  tip_str += "</br>";
+  tip_str += "<strong>" + x_axis_label + ":</strong> <span style='color:red'>" + d[x_axis_label] + "</span>";
+  tip_str += "</br>";
+  tip_str += "<strong>" + label_by + ":</strong> <span style='color:red'>" + d[label_by] + "</span>";
+  return tip_str; });
+
+container.call(tip);
+  x.domain(d3.extent(data, function(d) { return d[x_axis_label]; })).nice();
+  y.domain(d3.extent(data, function(d) { return d[y_axis_label]; })).nice();
+
+  container.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text(x_axis_label);
+
+  container.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 10)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text(y_axis_label)
+
+ container.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", width + 10)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text(label_by)
+
+  container.selectAll(".dot")
+      .data(data)
+    .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 3.5)
+      .attr("cx", function(d) { return x(d[x_axis_label]); })
+      .attr("cy", function(d) { return y(d[y_axis_label]); })
+      .style("fill", function(d) { return color(d[label_by]); }).on('mouseover', tip.show)
+   .on('mouseout', tip.hide);
+
+  var legend = container.selectAll(".legend")
+      .data(color.domain())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width + 80)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width + 70)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+
+});
+
+function dottype(d) {
+  d.x = +d.x;
+  d.y = +d.y;
+  return d;
+}
+
+function zoomed() {
+  container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+}
+
+function dragstarted(d) {
+  d3.event.sourceEvent.stopPropagation();
+  d3.select(this).classed("dragging", true);
+}
+
+function dragged(d) {
+  d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+}
+
+function dragended(d) {
+  d3.select(this).classed("dragging", false);
+}
+
+</script>

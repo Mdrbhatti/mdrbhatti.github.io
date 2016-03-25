@@ -106,6 +106,12 @@ var container = svg.append("g");
 
 d3.json("https://gist.githubusercontent.com/anonymous/c091a545bb9a349cae8c/raw/aaffa73722f01733540af0721c95a452f4cd6009/pulsar_data_test.json", function(error, data) {
   if (error) throw error;
+
+  data.forEach(function(d, i) {
+  d[y_axis_label] = Math.log(d[y_axis_label]); });
+
+
+
   var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { 
   var tip_str = "";
   tip_str += "<strong>" + y_axis_label + ":</strong> <span style='color:red'>" + d[y_axis_label] + "</span>";
@@ -139,7 +145,7 @@ container.call(tip);
       .attr("y", 10)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text(y_axis_label)
+      .text("log(" + y_axis_label + ")");
 
  container.append("g")
       .attr("class", "y axis")
